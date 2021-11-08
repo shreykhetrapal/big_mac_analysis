@@ -15,6 +15,32 @@ library(shinydisconnect)
 library(shinyjs)
 library(shinyWidgets)
 
+# ---- Loading all data ----
+
+# Cattle Data
+"Live Cattle Futures Data - Sheet1.csv" %>% 
+  read_csv() %>% 
+  clean_names() %>% 
+  mutate(date = date %>% mdy()) %>% 
+  mutate(across(.cols = is.character, .fns = parse_number)) -> cattle_raw_data
+
+# Big Mac data 
+"big-mac-historical-source-data.csv" %>% 
+  read_csv() %>% 
+  clean_names() -> bm_historical
+
+"big-mac-source-data.csv" %>% 
+  read_csv() %>% 
+  clean_names() -> bm_source
+
+bm_historical %>% 
+  select(date, local_price, currency_code) %>% 
+  filter(currency_code == "USD") %>% 
+  rbind(bm_source %>% 
+          select(date, local_price, currency_code)) -> bm_all_data
+
+source("bm_functions.R")
+
 ui <- tagList(
   shinyjs::useShinyjs(),
   tags$head(
