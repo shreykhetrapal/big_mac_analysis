@@ -8,14 +8,16 @@ This repo can be divided into 2 parts:
 	a. Data Acquisition
 	manual upload of csv files.
 	
-	b. Data Preprocessing for Big Mac Index
+	b. Data preprocessing for Big Mac Index
 	run: 
+	
 	```
   $ Rscript raw_preprocessing_big_mac.R
   ```
   
-	c. Data Preprocessing for Cattle Data
-	run:
+	c. Data preprocessing for Cattle Data
+	run: 
+	
 	```
   $ Rscript raw_preprocessing_cattle.R
   ```
