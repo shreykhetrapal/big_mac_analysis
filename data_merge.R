@@ -1,0 +1,13 @@
+library(tidyverse)
+library(data.table)
+
+cattle <- fread('./data_output/processed_cattle.csv')
+bmi <- fread('./data_output/processed_bmi.csv')
+
+head(bmi)
+head(cattle)
+
+data <- bmi %>% left_join(cattle, by = "date")
+
+# write merged data to /output_data folder
+fwrite(data, './data_output/merged_data.csv')
