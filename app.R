@@ -63,7 +63,7 @@ ui <- tagList(
                                 fluidPage(
                                   h1("Validation"), 
                                   column(7, 
-                                         plotlyOutput("big_mac_graph")
+                                         plotlyOutput("big_mac_graph") %>% withSpinner()
                                          ),
                                   column(5,
                                          selectInput("choose_country", label = "Choose Country", choices = unique(bm_all_data$name), 
@@ -83,7 +83,7 @@ ui <- tagList(
                                                   selected = "USD")
                                     ),
                                     mainPanel(
-                                      plotOutput("standardised_graph")
+                                      plotlyOutput("standardised_graph") %>% withSpinner()
                                     )
                                   )
                                 )
@@ -162,10 +162,11 @@ server <- function(input, output, session) {
     
   })
   
-  output$standardised_graph <- renderPlot({
+  output$standardised_graph <- renderPlotly({
    
     tryCatch({
-      standard_facet()
+      standard_facet() -> p1
+      p1 %>% ggplotly()
     }, 
     error = function(e){
       print(paste0(e, " : Error in output$standardised_graph"))
