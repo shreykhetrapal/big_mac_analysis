@@ -2,44 +2,7 @@ library(tidyverse)
 library(janitor)
 library(lubridate)
 
-# Big mac data and Cattle data are not matching for a few years due to the 'date' not matching. 
-# So, we will only match by the year and the month 
-  
-# bm_all_data %>% 
-#   mutate(year = date %>% year(), 
-#          month = date %>% month(),
-#          year_month = paste0(year, "-", month)) -> bm_date
-
-# cattle_raw_data %>%
-#   mutate(year = date %>% year(), 
-#          month = date %>% month(),
-#          year_month = paste0(year, "-", month)) ->cattle_date
-
-
-# cattle_date %>% 
-#   select(year_month, adj_close) %>% 
-#   full_join(bm_date, by = "year_month") %>% 
-#   select(-c(year, month, date)) %>% 
-#   pivot_longer(cols = c(local_price, adj_close)) %>%
-#   drop_na() %>% 
-#   distinct() -> temp
-
-# temp %>% 
-#   group_by(year_month, name) %>% 
-#   arrange(-value) %>% 
-#   filter(currency_code == "USD") %>% 
-#   slice(1) %>% 
-#   ungroup() %>% 
-#   arrange(year_month) %>% 
-#   #filter(name == "local_price") %>% 
-#   ggplot(aes(x = year_month, y = value, color = name, group = name)) +
-#   geom_line() +
-#   facet_wrap(~name, scales = "free_y") +
-#   theme(axis.text.x = element_text(angle = 90)) +
-#   geom_smooth() -> p
-
 bm_index_graphs <- function(bm_all_data){
-  
   
   # Calculating the current USD price 
   bm_all_data %>% 
@@ -65,24 +28,111 @@ bm_index_graphs <- function(bm_all_data){
   
   temp %>% 
     ggplot() +
-    geom_segment(aes(x = name, xend = name, y = 0, yend = final)) +
-    geom_point(aes(x = name, y = final, color = color_vector)) +
+    geom_segment(aes(x = name, xend = name, y = 0, yend = final), size = 0.1) +
+    geom_point(aes(x = name, y = final, color = color_vector), size = 2) +
     theme_minimal() +
-    scale_color_manual(values = c("#ef1f3a", "#395662", "#00c0d5")) +
+    scale_color_manual(values = c("#00c0d5", "#395662", "#ef1f3a")) +
     scale_y_continuous(position = "right") +
     geom_hline(aes(yintercept = 0, color = "#395662")) +
-    #geom_text(aes(x = 7, y = 5), label = "Overvalued", color = "#ef1f3a") +
-    #geom_text(aes(x = 7.7, y = -5), label = "Undervalued", color = "#00c0d5") +
+    geom_label(aes(x = 7, y = 5), label = "Overvalued", color = "#00c0d5", fontface = "bold") +
+    geom_label(aes(x = 7.5, y = -5), label = "Undervalued", color = "#ef1f3a", fontface = "bold") +
+    labs(title = "The Big-Mac Comparison",
+         y = "Percent Valuation",
+         caption = "Base currency : USD") +
     theme(axis.text.x = element_blank(), 
-          axis.title = element_blank(), 
-          panel.grid = element_blank(), 
-          legend.position = "none",
+          axis.title = element_blank(),
+          plot.title = element_text(hjust = 0.5),
+          panel.grid = element_blank(),
           panel.background = element_rect(fill = "transparent"),
           plot.background = element_rect(fill = "transparent"),
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank()) -> p
+          legend.position = "none") -> p
   
-  p 
+  p
+}
+
+# Fill missing dates and adjust for weekend values 
+fill_missing_dates <- function(cattle_raw_data){
   
+  
+  cattle_raw_data$date %>% min() -> min_date
+  cattle_raw_data$date %>% max() -> max_date
+  
+  all_dates <- tibble(date = seq.Date(min_date, max_date, by = "1 day"))
+  
+  # Joined and filled missing dates
+  all_dates %>% 
+    left_join(cattle_raw_data, by = "date") -> date_adjusted_cattle
+  
+  
+  # Now, need to adjust for weekend missing values
+  date_adjusted_cattle %>% 
+    filter(is.na(open)) -> na_dates
+  
+  
+  # 1. function(date_adjusted_cattle)
+  # 2. check the first na value in the filtered data and it's correct value in the actual data 
+  
+  for(i in 1:nrow(na_dates)){
+    
+    print(i)
+    
+    na_dates$date[i] -> first_date
+    
+    date_adjusted_cattle %>% 
+      filter(date >= first_date) %>% 
+      drop_na(open) %>% 
+      slice(1) %>% 
+      pull(open) -> my_first_row
+    
+    
+    date_adjusted_cattle %>% 
+      mutate(adj_close= ifelse(date == first_date,my_first_row[1],adj_close)) -> date_adjusted_cattle
+  }
+  
+  date_adjusted_cattle
+  
+}
+
+standardize_values <- function(plotting_data, selected_currency){
+  
+  # Standardisation by using the formula (X - Mean)/SD
+  
+  plotting_data %>% 
+    filter(category == "adj_close") %>% 
+    summarise(mean = price %>% mean(na.rm = T), 
+              sd = price %>% sd(na.rm = T)) -> cattle_mean_sd
+  
+  
+  plotting_data %>% 
+    # Filtering the selected currency
+    filter(category == "local_price" & currency_code == selected_currency) %>% 
+    summarise(mean = price %>% mean(na.rm = T), 
+              sd = price %>% sd(na.rm = T)) -> bmi_mean_sd
+  
+  plotting_data %>% 
+    mutate(price = ifelse(category == "adj_close", (price - cattle_mean_sd$mean)/ cattle_mean_sd$sd, 
+                          ifelse(category == "local_price", (price - bmi_mean_sd$mean)/ bmi_mean_sd$sd, 0))) -> plot_standard_formula
+  
+  plot_standard_formula
+  
+}
+
+plot_standardised <- function(plotting_data, selected_currency){
+  
+  # Standardising values
+  standardize_values(plotting_data, selected_currency) -> plot_standard_formula
+  
+  # Standardised Forumula plot faceted
+  ggplot() +
+    geom_line(data = filter(plot_standard_formula, category == "adj_close"), 
+              aes(date, price), color = "#4393C3", size = 0.2) +
+    geom_step(data = filter(plot_standard_formula, category == "local_price" & currency_code == "USD"), 
+              aes(date, price), color = "#053061", size = 1.5) +
+    labs(title = "Standardised graph", 
+         y = "standardised Y") +
+    facet_wrap(~category) +
+    ggthemes::theme_stata() +
+    theme(legend.position = "none", 
+          plot.title = element_text(hjust = 0.5))
   
 }

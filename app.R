@@ -18,11 +18,8 @@ library(shinyWidgets)
 # ---- Loading all data ----
 
 # Cattle Data
-"./data_raw/Live Cattle Futures Data - Sheet1.csv" %>% 
-  read_csv() %>% 
-  clean_names() %>% 
-  mutate(date = date %>% mdy()) %>% 
-  mutate(across(.cols = is.character, .fns = parse_number)) -> cattle_raw_data
+"cattle_data_final.rds" %>% 
+  readRDS() -> cattle_data_final
 
 # Big Mac data 
 "./data_raw/big-mac-historical-source-data.csv" %>% 
@@ -36,6 +33,9 @@ library(shinyWidgets)
 bm_historical %>% 
   rbind(bm_source %>% 
           select(-gdp_dollar)) -> bm_all_data
+
+"plotting_data.rds" %>% 
+  readRDS() -> plotting_data
 
 source("bm_functions.R")
 
@@ -62,10 +62,10 @@ ui <- tagList(
                                 br(),
                                 fluidPage(
                                   h1("Validation"), 
-                                  column(6, 
+                                  column(7, 
                                          plotlyOutput("big_mac_graph")
                                          ),
-                                  column(6,
+                                  column(5,
                                          selectInput("choose_country", label = "Choose Country", choices = unique(bm_all_data$name), 
                                                      selected = "Britain"), 
                                          uiOutput("explanation")
@@ -79,15 +79,11 @@ ui <- tagList(
                                   titlePanel("Price Comparisons"),
                                   sidebarLayout(
                                     sidebarPanel(
-                                      selectInput("country", "Choose Country", choices = c("Shrey","Khetrapal"))
+                                      selectInput("choose_currency", "Choose Currency", choices = unique(bm_all_data$currency_code), 
+                                                  selected = "USD")
                                     ),
                                     mainPanel(
-                                      h1("First level title"),
-                                      h2("Second level title"),
-                                      h3("Third level title"),
-                                      h4("Fourth level title"),
-                                      h5("Fifth level title"),
-                                      h6("Sixth level title")
+                                      plotOutput("standardised_graph")
                                     )
                                   )
                                 )
@@ -115,6 +111,7 @@ server <- function(input, output, session) {
   
   output$big_mac_graph <- renderPlotly({
   
+    req(input$choose_country)
     
     bm_index_graphs(bm_all_data) -> p
     
@@ -146,15 +143,39 @@ server <- function(input, output, session) {
     data_for_explanation %>% 
       filter(name == input$choose_country) -> filtered_data
     
-    if(filtered_data$final < 1){
+    if(filtered_data$final < 0){
       check_value <- "undervalued"
-    } else if(filtered_data$final == 1){
-      check_value <- "same"
-    } else {
+    }else {
       check_value <- "overvalued"
     }
-    h3(paste0("A big mac costs ", filtered_data$local_price, " in ", input$choose_country,"'s local currency and ", USD_current," in the United States. The implied exchange rate is ", round(filtered_data$implied_exchange_rate,2),
+    h4(paste0("A big mac costs ", filtered_data$local_price, " in ", input$choose_country,"'s local currency and ", USD_current," dollars in the United States. The implied exchange rate is ", round(filtered_data$implied_exchange_rate,2),
               ". The difference between this and the actual exchange rate is, ", round(abs(filtered_data$difference),2), ", suggests the ", input$choose_country, " is ", round(abs(filtered_data$final),2),"% ", check_value))
+  })
+  
+  standard_facet <- reactive({
+    
+    req(input$choose_currency)
+    
+    input$choose_currency -> selected_currency
+    
+    plot_standardised(plotting_data, selected_currency)
+    
+  })
+  
+  output$standardised_graph <- renderPlot({
+   
+    tryCatch({
+      standard_facet()
+    }, 
+    error = function(e){
+      print(paste0(e, " : Error in output$standardised_graph"))
+      ggplot() +
+        theme_void() +
+        geom_text(aes(0,0,label='N/A : Please contact author')) +
+        xlab(NULL)
+    })
+    
+    
   })
   
 }
