@@ -111,7 +111,7 @@ standardize_values <- function(plotting_data, selected_currency){
   
   plotting_data %>% 
     mutate(sd_price = ifelse(category == "adj_close", (price - cattle_mean_sd$mean)/ cattle_mean_sd$sd, 
-                          ifelse(category == "local_price", (price - bmi_mean_sd$mean)/ bmi_mean_sd$sd, 0))) -> plot_standard_formula
+                          ifelse(category == "local_price" & currency_code == selected_currency, (price - bmi_mean_sd$mean)/ bmi_mean_sd$sd, NA))) -> plot_standard_formula
   
   plot_standard_formula
   
@@ -126,7 +126,7 @@ plot_standardised <- function(plotting_data, selected_currency){
   ggplot() +
     geom_line(data = filter(plot_standard_formula, category == "adj_close"), 
               aes(date, sd_price, label = price), color = "#4393C3", size = 0.2) +
-    geom_step(data = filter(plot_standard_formula, category == "local_price" & currency_code == "USD"), 
+    geom_step(data = filter(plot_standard_formula, category == "local_price" & currency_code == selected_currency), 
               aes(date, sd_price, label = price), color = "#053061", size = 1.5) +
     labs(title = "Standardised graph", 
          y = "standardised Y") +
