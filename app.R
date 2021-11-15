@@ -106,6 +106,7 @@ ui <- tagList(
 
 
 
+
 server <- function(input, output, session) {
   
   print(bm_all_data)
@@ -201,8 +202,9 @@ server <- function(input, output, session) {
       
       cor_calculate(plotting_data,input$choose_currency) -> test_results
       
-      explanation <- paste0("The correlation between ", input$choose_currency, " and US cattle futures is ",round(test_results$estimate,2),"\n
-                          with a P-value of ", format(test_results$p.value, nsmall = 4, digits = 2))
+      explanation <- paste0("The correlation between ", input$choose_currency, " and US cattle futures is ",round(test_results$cor_results$estimate,2),"\n
+                          with a P-value of ", format(test_results$cor_results$p.value, nsmall = 4, digits = 2), "\n
+                            No. of points in correlation = ", test_results$points)
       
       h4(explanation)
       

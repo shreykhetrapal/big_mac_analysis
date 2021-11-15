@@ -154,6 +154,13 @@ cor_calculate <- function(plotting_data, country_selected = "USD"){
     filter(category == "local_price") %>% 
     pull(price) -> bm_price
   
-  cor.test(cattle_price, bm_price)
+  tibble(cp = cattle_price,
+         bmi = bm_price) %>% 
+    drop_na() %>% 
+    nrow() -> total_points
+  
+  return(list(cor_results = cor.test(cattle_price, bm_price), 
+              points = total_points))
+  
   
 }
