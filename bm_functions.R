@@ -110,7 +110,7 @@ standardize_values <- function(plotting_data, selected_currency){
               sd = price %>% sd(na.rm = T)) -> bmi_mean_sd
   
   plotting_data %>% 
-    mutate(price = ifelse(category == "adj_close", (price - cattle_mean_sd$mean)/ cattle_mean_sd$sd, 
+    mutate(sd_price = ifelse(category == "adj_close", (price - cattle_mean_sd$mean)/ cattle_mean_sd$sd, 
                           ifelse(category == "local_price", (price - bmi_mean_sd$mean)/ bmi_mean_sd$sd, 0))) -> plot_standard_formula
   
   plot_standard_formula
@@ -125,9 +125,9 @@ plot_standardised <- function(plotting_data, selected_currency){
   # Standardised Forumula plot faceted
   ggplot() +
     geom_line(data = filter(plot_standard_formula, category == "adj_close"), 
-              aes(date, price), color = "#4393C3", size = 0.2) +
+              aes(date, sd_price, label = price), color = "#4393C3", size = 0.2) +
     geom_step(data = filter(plot_standard_formula, category == "local_price" & currency_code == "USD"), 
-              aes(date, price), color = "#053061", size = 1.5) +
+              aes(date, sd_price, label = price), color = "#053061", size = 1.5) +
     labs(title = "Standardised graph", 
          y = "standardised Y") +
     facet_wrap(~category) +

@@ -165,8 +165,8 @@ server <- function(input, output, session) {
   output$standardised_graph <- renderPlotly({
    
     tryCatch({
-      standard_facet() -> p1
-      p1 %>% ggplotly()
+      standard_facet() ->> p1
+      p1 %>% ggplotly(tooltip = "price")
     }, 
     error = function(e){
       print(paste0(e, " : Error in output$standardised_graph"))
