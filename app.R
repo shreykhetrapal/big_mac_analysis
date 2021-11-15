@@ -115,7 +115,7 @@ server <- function(input, output, session) {
     
     tryCatch({
       
-      bm_index_graphs(bm_all_data) -> p
+      bm_index_graphs(bm_all_data, input$choose_country) -> p
       
       p %>% ggplotly(tooltip = "name")
       

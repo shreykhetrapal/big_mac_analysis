@@ -2,7 +2,7 @@ library(tidyverse)
 library(janitor)
 library(lubridate)
 
-bm_index_graphs <- function(bm_all_data){
+bm_index_graphs <- function(bm_all_data, country_selected = "Britain"){
   
   # Calculating the current USD price 
   bm_all_data %>% 
@@ -22,20 +22,24 @@ bm_index_graphs <- function(bm_all_data){
     mutate(color_select = ifelse(final < 0, "#ef1f3a",
                                  ifelse(final == 0, "#395662", "#00c0d5"))) %>% 
     arrange(final) %>% 
-    mutate(name = name %>% as.factor() %>% fct_inorder()) -> temp
+    mutate(name = name %>% as.factor() %>% fct_inorder()) %>% 
+    mutate(shape_point = ifelse(name == country_selected, "shape1", "shape2")) %>% 
+    mutate(shape_point = shape_point %>% as.factor() %>% fct_inorder()) -> temp
   
   temp$color_select -> color_vector
   
   temp %>% 
     ggplot() +
     geom_segment(aes(x = name, xend = name, y = 0, yend = final), size = 0.1) +
-    geom_point(aes(x = name, y = final, color = color_vector), size = 2) +
+    geom_point(aes(x = name, y = final, color = color_vector, shape = shape_point), size = 2) +
     theme_minimal() +
     scale_color_manual(values = c("#00c0d5", "#395662", "#ef1f3a")) +
     scale_y_continuous(position = "right") +
+    scale_shape_manual(values = c(19, 4)) +
     geom_hline(aes(yintercept = 0, color = "#395662")) +
     geom_label(aes(x = 7, y = 5), label = "Overvalued", color = "#00c0d5", fontface = "bold") +
     geom_label(aes(x = 7.5, y = -5), label = "Undervalued", color = "#ef1f3a", fontface = "bold") +
+    #ggrepel::geom_label_repel(data = filter(temp, name == "India"), aes(name, final- 5 , label = name)) +
     labs(title = "The Big-Mac Comparison",
          y = "Percent Valuation",
          caption = "Base currency : USD") +
