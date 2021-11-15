@@ -113,9 +113,22 @@ server <- function(input, output, session) {
   
     req(input$choose_country)
     
-    bm_index_graphs(bm_all_data) -> p
+    tryCatch({
+      
+      bm_index_graphs(bm_all_data) -> p
+      
+      p %>% ggplotly(tooltip = "name")
+      
+    },
+    error = function(e){
+      print(paste0(e, " : Error in output$big_mac_graph"))
+      ggplot() +
+        theme_void() +
+        geom_text(aes(0,0,label='N/A : Please contact author')) +
+        xlab(NULL)
+    })
     
-    p %>% ggplotly(tooltip = "name")
+   
     
     
   })
@@ -165,7 +178,7 @@ server <- function(input, output, session) {
   output$standardised_graph <- renderPlotly({
    
     tryCatch({
-      standard_facet() ->> p1
+      standard_facet() -> p1
       p1 %>% ggplotly(tooltip = "price")
     }, 
     error = function(e){
