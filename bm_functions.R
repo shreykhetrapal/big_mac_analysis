@@ -140,3 +140,20 @@ plot_standardised <- function(plotting_data, selected_currency){
           plot.title = element_text(hjust = 0.5))
   
 }
+
+# Calculate correlations 
+cor_calculate <- function(plotting_data, country_selected = "USD"){
+  
+  standardize_values(plotting_data, country_selected) %>% 
+    filter(currency_code == country_selected) %>% 
+    filter(category == "adj_close") %>% 
+    pull(price) -> cattle_price
+  
+  standardize_values(plotting_data, country_selected) %>% 
+    filter(currency_code == country_selected) %>% 
+    filter(category == "local_price") %>% 
+    pull(price) -> bm_price
+  
+  cor.test(cattle_price, bm_price)
+  
+}

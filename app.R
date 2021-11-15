@@ -83,7 +83,8 @@ ui <- tagList(
                                                   selected = "USD")
                                     ),
                                     mainPanel(
-                                      plotlyOutput("standardised_graph") %>% withSpinner()
+                                      plotlyOutput("standardised_graph") %>% withSpinner(),
+                                      uiOutput("correlation_explanation")
                                     )
                                   )
                                 )
@@ -187,6 +188,27 @@ server <- function(input, output, session) {
         theme_void() +
         geom_text(aes(0,0,label='N/A : Please contact author')) +
         xlab(NULL)
+    })
+    
+    
+  })
+  
+  output$correlation_explanation <- renderUI({
+    
+    tryCatch({
+      
+      req(input$choose_currency)
+      
+      cor_calculate(plotting_data,input$choose_currency) -> test_results
+      
+      explanation <- paste0("The correlation between ", input$choose_currency, " and US cattle futures is ",round(test_results$estimate,2),"\n
+                          with a P-value of ", format(test_results$p.value, nsmall = 4, digits = 2))
+      
+      h4(explanation)
+      
+    }, 
+    error = function(e){
+      h4("Not enough observations to calculate correlations, please try another country")
     })
     
     
