@@ -239,9 +239,21 @@ server <- function(input, output, session) {
       explanation <- paste0("The correlation between ", input$choose_currency, " and US cattle futures is ",round(test_results$cor_results$estimate,2),"\n
                           with a P-value of ", format(test_results$cor_results$p.value, nsmall = 4, digits = 2))
       
+      if(test_results$cor_results$estimate >= 0.5){
+        proof <- "proves"
+      }else if(test_results$cor_results$estimate >= 0.3 & test_results$cor_results$estimate < 0.5){
+        proof <- "moderately proves"
+      }else if(test_results$cor_results$estimate >= 0 & test_results$cor_results$estimate < 0.3){
+        proof <- "barely proves"
+      }else if(test_results$cor_results$estimate < 0){
+        proof <- "disproves"
+      }
+      
+      hypothesis <- paste0("A correlation of ",round(test_results$cor_results$estimate,2)," between cattle prices and the big mac index for ",input$choose_currency," ",proof," our hypothesis, that when cattle price move, big mac prices move, and exchange thus move")
+      
       div(h4(explanation), 
-          h4(paste0("No. of points in correlation = ", test_results$points))
-          #h4(paste("This text is ", tags$span(style="color:red", "red"), sep = ""))
+          h4(paste0("No. of points in correlation = ", test_results$points)),
+          h4(hypothesis)
       )
     }, 
     error = function(e){
