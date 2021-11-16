@@ -138,34 +138,46 @@ server <- function(input, output, session) {
   
   output$explanation <- renderUI({
     
-    req(input$choose_country)
+    tryCatch({
+      
+      req(input$choose_country)
+      
+      # Calculating the current USD price 
+      bm_all_data %>% 
+        filter(currency_code == "USD") %>% 
+        filter(date == max(date)) %>% 
+        pull(local_price) -> USD_current
+      
+      bm_all_data %>% 
+        select(date, name, currency_code, local_price, dollar_ex) %>% 
+        # calculating data for the graphs 
+        mutate(implied_exchange_rate = local_price/USD_current) %>% 
+        mutate(difference = implied_exchange_rate-dollar_ex) %>% 
+        mutate(final = difference/dollar_ex) %>% 
+        # filtering dates for 2020
+        filter(date == max(date)) %>% 
+        mutate(final = final * 100) -> data_for_explanation
+      
+      data_for_explanation %>% 
+        filter(name == input$choose_country) -> filtered_data
+      
+      if(filtered_data$final < 0){
+        check_value <- "undervalued"
+      }else {
+        check_value <- "overvalued"
+      }
+      h4(paste0("A big mac costs ", filtered_data$local_price, " in ", input$choose_country,"'s local currency and ", USD_current," dollars in the United States. The implied exchange rate is ", round(filtered_data$implied_exchange_rate,2),
+                ". The difference between this and the actual exchange rate is, ", round(abs(filtered_data$difference),2), ", suggests the ", input$choose_country, " is ", round(abs(filtered_data$final),2),"% ", check_value))
+      
+    },
+    error = function(e){
+      
+      h4("Too few data points, please choose another country")
+      
+      
+    })
     
-    # Calculating the current USD price 
-    bm_all_data %>% 
-      filter(currency_code == "USD") %>% 
-      filter(date == max(date)) %>% 
-      pull(local_price) -> USD_current
     
-    bm_all_data %>% 
-      select(date, name, currency_code, local_price, dollar_ex) %>% 
-      # calculating data for the graphs 
-      mutate(implied_exchange_rate = local_price/USD_current) %>% 
-      mutate(difference = implied_exchange_rate-dollar_ex) %>% 
-      mutate(final = difference/dollar_ex) %>% 
-      # filtering dates for 2020
-      filter(date == max(date)) %>% 
-      mutate(final = final * 100) -> data_for_explanation
-    
-    data_for_explanation %>% 
-      filter(name == input$choose_country) -> filtered_data
-    
-    if(filtered_data$final < 0){
-      check_value <- "undervalued"
-    }else {
-      check_value <- "overvalued"
-    }
-    h4(paste0("A big mac costs ", filtered_data$local_price, " in ", input$choose_country,"'s local currency and ", USD_current," dollars in the United States. The implied exchange rate is ", round(filtered_data$implied_exchange_rate,2),
-              ". The difference between this and the actual exchange rate is, ", round(abs(filtered_data$difference),2), ", suggests the ", input$choose_country, " is ", round(abs(filtered_data$final),2),"% ", check_value))
   })
   
   standard_facet <- reactive({
@@ -204,11 +216,12 @@ server <- function(input, output, session) {
       cor_calculate(plotting_data,input$choose_currency) -> test_results
       
       explanation <- paste0("The correlation between ", input$choose_currency, " and US cattle futures is ",round(test_results$cor_results$estimate,2),"\n
-                          with a P-value of ", format(test_results$cor_results$p.value, nsmall = 4, digits = 2), "\n
-                            No. of points in correlation = ", test_results$points)
+                          with a P-value of ", format(test_results$cor_results$p.value, nsmall = 4, digits = 2))
       
-      h4(explanation)
-      
+      div(h4(explanation), 
+          h4(paste0("No. of points in correlation = ", test_results$points))
+          #h4(paste("This text is ", tags$span(style="color:red", "red"), sep = ""))
+      )
     }, 
     error = function(e){
       h4("Not enough observations to calculate correlations, please try another country")
