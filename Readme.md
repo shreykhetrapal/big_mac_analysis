@@ -35,6 +35,8 @@ $ Rscript R/data_merge.R
 ```
 
 ## Visualization section
+![big mac index](./misc/big_mac_index.gif)
+
 we made [a dashboard](https://businessbaddies.shinyapps.io/big_mac/) using shiny app in R.
   
 ## Installations
