@@ -14,6 +14,7 @@ library(aws.s3)
 library(shinydisconnect)
 library(shinyjs)
 library(shinyWidgets)
+library(ggthemes)
 
 # ---- Loading all data ----
 
@@ -61,9 +62,10 @@ ui <- tagList(
                                 title = "Big Mac",
                                 br(),
                                 fluidPage(
-                                  h1("Validation"), 
+                                  h1("The Big Mac Index"), 
                                   column(7, 
-                                         plotlyOutput("big_mac_graph") %>% withSpinner()
+                                         plotlyOutput("big_mac_graph") %>% withSpinner(),
+                                         h4("Inspired from The Economist")
                                          ),
                                   column(5,
                                          selectInput("choose_country", label = "Choose Country", choices = unique(bm_all_data$name), 

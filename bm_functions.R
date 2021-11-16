@@ -40,7 +40,7 @@ bm_index_graphs <- function(bm_all_data, country_selected = "Britain"){
     geom_label(aes(x = 7, y = 5), label = "Overvalued", color = "#00c0d5", fontface = "bold") +
     geom_label(aes(x = 7.5, y = -5), label = "Undervalued", color = "#ef1f3a", fontface = "bold") +
     #ggrepel::geom_label_repel(data = filter(temp, name == "India"), aes(name, final- 5 , label = name)) +
-    labs(title = "The Big-Mac Comparison",
+    labs(title = "",
          y = "Percent Valuation",
          caption = "Base currency : USD") +
     theme(axis.text.x = element_blank(), 
@@ -57,7 +57,6 @@ bm_index_graphs <- function(bm_all_data, country_selected = "Britain"){
 # Fill missing dates and adjust for weekend values 
 fill_missing_dates <- function(cattle_raw_data){
   
-  
   cattle_raw_data$date %>% min() -> min_date
   cattle_raw_data$date %>% max() -> max_date
   
@@ -67,24 +66,22 @@ fill_missing_dates <- function(cattle_raw_data){
   all_dates %>% 
     left_join(cattle_raw_data, by = "date") -> date_adjusted_cattle
   
-  
   # Now, need to adjust for weekend missing values
   date_adjusted_cattle %>% 
     filter(is.na(open)) -> na_dates
-  
-  
-  # 1. function(date_adjusted_cattle)
-  # 2. check the first na value in the filtered data and it's correct value in the actual data 
   
   for(i in 1:nrow(na_dates)){
     
     print(i)
     
+    # Take the first NA date 
     na_dates$date[i] -> first_date
     
     date_adjusted_cattle %>% 
       filter(date >= first_date) %>% 
+      # Drop all missing values based on the open calumn
       drop_na(open) %>% 
+      # Slice first row with available data 
       slice(1) %>% 
       pull(open) -> my_first_row
     
@@ -164,3 +161,4 @@ cor_calculate <- function(plotting_data, country_selected = "USD"){
   
   
 }
+
