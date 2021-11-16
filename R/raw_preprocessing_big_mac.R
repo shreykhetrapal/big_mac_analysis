@@ -9,14 +9,14 @@ base_currencies = c('USD')
 # index on currency_code for faster joining, and
 # remove lines where the local price is missing and
 # drop unused column
-big_mac_data = fread('./data_raw/big-mac-source-data.csv', 
+big_mac_data = fread('./data/data_raw/big-mac-source-data.csv', 
                      na.strings = '#N/A',
                      key = 'date,name', 
                      index = 'currency_code') %>%
   .[!is.na(local_price)] %>%
   .[, !"GDP_dollar"]
 
-big_mac_data_old = fread('./data_raw/big-mac-historical-source-data.csv', 
+big_mac_data_old = fread('./data/data_raw/big-mac-historical-source-data.csv', 
                      na.strings = '#N/A',
                      key = 'date,name', 
                      index = 'currency_code') %>%
@@ -42,5 +42,5 @@ for(currency in base_currencies) {
 }
 
 # write adjusted data to /output_data folder
-fwrite(big_mac_index, './data_output/processed_bmi.csv')
+fwrite(big_mac_index, './data/data_output/processed_bmi.csv')
 
