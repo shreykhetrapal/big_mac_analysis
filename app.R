@@ -23,11 +23,11 @@ library(ggthemes)
   readRDS() -> cattle_data_final
 
 # Big Mac data 
-"./data_raw/big-mac-historical-source-data.csv" %>% 
+"./data/data_raw/big-mac-historical-source-data.csv" %>% 
   read_csv() %>% 
   clean_names() -> bm_historical
 
-"./data_raw/big-mac-source-data.csv" %>% 
+"./data/data_raw/big-mac-source-data.csv" %>% 
   read_csv() %>% 
   clean_names() -> bm_source
 
@@ -38,7 +38,7 @@ bm_historical %>%
 "plotting_data.rds" %>% 
   readRDS() -> plotting_data
 
-source("bm_functions.R")
+source("./R/bm_functions.R")
 
 ui <- tagList(
   shinyjs::useShinyjs(),

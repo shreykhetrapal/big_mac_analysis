@@ -5,7 +5,7 @@ library(data.table)
 library(docstring)
 
 # read csv, normalize column names, convert date column type into date, sort by date
-cattle_data = fread('./data_raw/Live Cattle Futures Data - Sheet1.csv') %>%
+cattle_data = fread('./data/data_raw/Live Cattle Futures Data - Sheet1.csv') %>%
   clean_names() %>%
   mutate(date = date %>% mdy()) %>%
   arrange(date)
@@ -14,9 +14,9 @@ cattle_data = fread('./data_raw/Live Cattle Futures Data - Sheet1.csv') %>%
 cattle_data_full_dates <- cattle_data %>% 
                           complete(date = seq.Date(min(date), max(date), by="day"))
 
-
 fill_missing_price <- function(data) {
-  #' for every date with missing adjusted close price value, replace NA with the nearest future date open price
+  #' for every date with missing adjusted close price value, replace NA with 
+  #' the nearest future date open price
   #' 
   #' replace the adj close price value with nearest open value of future date
   temp = data
@@ -53,6 +53,6 @@ adjusted_cattle_data <- fill_missing_price(cattle_data_full_dates)
 final_data <- adjusted_cattle_data %>% select(date, adj_close)
 
 # write adjusted data to /output_data folder
-fwrite(final_data, './data_output/processed_cattle.csv')
+fwrite(final_data, './data/data_output/processed_cattle.csv')
 
 
