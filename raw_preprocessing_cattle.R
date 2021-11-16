@@ -14,9 +14,9 @@ cattle_data = fread('./data_raw/Live Cattle Futures Data - Sheet1.csv') %>%
 cattle_data_full_dates <- cattle_data %>% 
                           complete(date = seq.Date(min(date), max(date), by="day"))
 
-
 fill_missing_price <- function(data) {
-  #' for every date with missing adjusted close price value, replace NA with the nearest future date open price
+  #' for every date with missing adjusted close price value, replace NA with 
+  #' the nearest future date open price
   #' 
   #' replace the adj close price value with nearest open value of future date
   temp = data
