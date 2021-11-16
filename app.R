@@ -58,24 +58,18 @@ ui <- tagList(
                           h2("Cattle Futures, Big Macs, PPP"),
                           h4("Hypothesis : Cattle futures are correlated to foreign exchange rates"),
                           br(),
-                          column(4, 
+                          column(7,
+                                 img(src='executive_summary.png', align = "right",  height = 400, width = 700)
+                          ),
+                          column(5, 
                                  wellPanel(style = "height:400px",
                                     h4("Info"),
-                                    p("Find the code for this project ",a(href="https://www.economist.com/big-mac-index", "here")),
-                                    p("Contact us ",a(href="business.baddies.qbs181@gmail.com", "here")),
+                                    p("Find the code for this project ",a(href="https://github.com/shreykhetrapal/big_mac_analysis", "here")),
+                                    p("Contact us ",a(href="mailto:business.baddies.qbs181@gmail.com", "here")),
                                    h4("Data Sources"),
                                    a(href="https://finance.yahoo.com/quote/LE%3DF/history?period1=1015200000&period2=1633478400&interval=1d&filter=history&frequency=1d&includeAdjustedClose=true&guccounter=1&guce_referrer=aHR0cHM6Ly9sb2dpbi55YWhvby5jb20v&guce_referrer_sig=AQAAAGCpe03QebHzUStS2mougl8dnCKJAI-ZyXcfxtvlxyfxGjS1lqE8u4TUsHkg3F3PI3zDSKJd4HZgW-8v7eGWYC2e3--U52QtxztdCs8137CThk1b94VTOHM6MkGVnUlCoBq0dyV_GoDX16AG87SZhF8yG1fBrCRv3sHdq3SYD9SB", "Cattle futures"), 
                                    a(href="https://www.economist.com/big-mac-index", "The Big Mac Index")
-                                 )),
-                          column(8, 
-                                 img(src='executive_summary.png', align = "right",  height = 400, width = 700)
-                                 )
-                          # column(4, 
-                          #        wellPanel(style = "height:150px",
-                          #          h4("Aim 3"),
-                          #          p("Test hypothesis that cattle futures are actually a harbinger of purchasing power parity")
-                          #        ))
-                          
+                                 ))
                         )
                         ),
                
