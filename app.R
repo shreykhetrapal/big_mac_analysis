@@ -44,7 +44,6 @@ ui <- tagList(
   shinyjs::useShinyjs(),
   tags$head(
     #tags$script(JS("setTimeout(function(){history.pushState({}, 'Page Title', '/big_mac');},30000);"))
-  ),
   fluidPage(
     disconnectMessage(
       text = "Your session link has expired, Please reload",
@@ -65,7 +64,7 @@ ui <- tagList(
                                   h1("The Big Mac Index"), 
                                   column(7, 
                                          plotlyOutput("big_mac_graph") %>% withSpinner(),
-                                         h4("Inspired from The Economist")
+                                         a(href="https://www.economist.com/big-mac-index", "Inspired from The Economist")
                                          ),
                                   column(5,
                                          selectInput("choose_country", label = "Choose Country", choices = unique(bm_all_data$name), 
@@ -102,7 +101,7 @@ ui <- tagList(
     
   )
 )
-
+)
 
 
 
