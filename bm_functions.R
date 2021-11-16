@@ -131,7 +131,8 @@ plot_standardised <- function(plotting_data, selected_currency){
               aes(date, sd_price, label = price), color = "#053061", size = 1.5) +
     labs(title = "Standardised graph", 
          y = "standardised Y") +
-    facet_wrap(~category) +
+    facet_wrap(~category, labeller = labeller(category = c("adj_close" = "Cattle Futures",
+                                       "local_price" = "Big Mac"))) +
     ggthemes::theme_stata() +
     theme(legend.position = "none", 
           plot.title = element_text(hjust = 0.5))
