@@ -7,22 +7,22 @@ library(janitor)
 library(lubridate)
 library(viridis)
 
-source("bm_functions.R")
+source("./R/bm_functions.R")
 
 # Load all data 
 
-"./data_raw/Live Cattle Futures Data - Sheet1.csv" %>% 
+"./data/data_raw/Live Cattle Futures Data - Sheet1.csv" %>% 
   read_csv() %>% 
   clean_names() %>% 
   mutate(date = date %>% mdy()) %>% 
   mutate(across(.cols = is.character, .fns = parse_number)) -> cattle_raw_data
 
 # Big Mac data 
-"./data_raw/big-mac-historical-source-data.csv" %>% 
+"./data/data_raw/big-mac-historical-source-data.csv" %>% 
   read_csv() %>% 
   clean_names() -> bm_historical
 
-"./data_raw/big-mac-source-data.csv" %>% 
+"./data/data_raw/big-mac-source-data.csv" %>% 
   read_csv() %>% 
   clean_names() -> bm_source
 
@@ -52,7 +52,7 @@ date_adjusted_cattle %>%
   select(-volume) %>% 
   visdat::vis_miss() -> p2
 
-p1+p2  -> p3
+p1+p2 -> p3
 
 #ggsave("missing_data.png", device = "png", width = 15, dpi = 500, height = 8)
 
