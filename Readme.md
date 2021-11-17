@@ -10,7 +10,7 @@ This section explains on data acquisition and data preprocessing.
 ### Data acquisition
 The Big Mac Index data is available in the [Big Mac Index repository from the Economist](https://github.com/TheEconomist/big-mac-data).  Based on the source, big mac prices are from McDonald’s directly and from reporting around the world; exchange rates are from Thomson Reuters; GDP and population data used to calculate the euro area averages are from Eurostat and GDP per person data are from the IMF World Economic Outlook reports.
 
-Cattle futures data is retrieved from [Yahoo Finance](https://finance.yahoo.com/quote/LE%3DF/history?period1=1015200000&period2=1633478400&interval=1d&filter=history&frequency=1d&includeAdjustedClose=true&guccounter=1&guce_referrer=aHR0cHM6Ly9sb2dpbi55YWhvby5jb20v&guce_referrer_sig=AQAAAGCpe03QebHzUStS2mougl8dnCKJAI-ZyXcfxtvlxyfxGjS1lqE8u4TUsHkg3F3PI3zDSKJd4HZgW-8v7eGWYC2e3--U52QtxztdCs8137CThk1b94VTOHM6MkGVnUlCoBq0dyV_GoDX16AG87SZhF8yG1fBrCRv3sHdq3SYD9SB).
+Cattle futures data is retrieved from [Yahoo Finance](https://finance.yahoo.com/quote/LE%3DF/history?period1=1015200000&period2=1633478400&interval=1d&filter=history&frequency=1d&includeAdjustedClose=true&guccounter=1&guce_referrer=aHR0cHM6Ly9sb2dpbi55YWhvby5jb20v&guce_referrer_sig=AQAAAGCpe03QebHzUStS2mougl8dnCKJAI-ZyXcfxtvlxyfxGjS1lqE8u4TUsHkg3F3PI3zDSKJd4HZgW-8v7eGWYC2e3--U52QtxztdCs8137CThk1b94VTOHM6MkGVnUlCoBq0dyV_GoDX16AG87SZhF8yG1fBrCRv3sHdq3SYD9SB) and stored in a google sheet [here](https://docs.google.com/spreadsheets/d/1DrBVZoM5-B5d23bevXhAXY-jh8Z17KsypR1tD66cNVc/edit?usp=sharing) (cleaning steps is in the "Instructions" tab).
 
 all input data are stored in `./data/data_raw`:
 * `big-mac-historical-source-data.csv` contains raw values for 1986-1999 period.
