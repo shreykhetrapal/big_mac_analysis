@@ -52,7 +52,28 @@ ui <- tagList(
     navbarPage("Business Badies",
                theme = shinytheme("cerulean"),
                # Start Input Tab ----
-               tabPanel("Main",
+               tabPanel("Home",
+                        fluidRow(
+                          h1("Business Baddies - Data Wrangling(QBS 181) Final Project"),
+                          h2("Cattle Futures, Big Macs, PPP"),
+                          h4("Hypothesis : Cattle futures are correlated to foreign exchange rates"),
+                          br(),
+                          column(7,
+                                 img(src='executive_summary.png', align = "right",  height = 400, width = 700)
+                          ),
+                          column(5, 
+                                 wellPanel(style = "height:400px",
+                                    h4("Info"),
+                                    p("Find the code for this project ",a(href="https://github.com/shreykhetrapal/big_mac_analysis", "here")),
+                                    p("Contact us ",a(href="mailto:business.baddies.qbs181@gmail.com", "here")),
+                                   h4("Data Sources"),
+                                   a(href="https://finance.yahoo.com/quote/LE%3DF/history?period1=1015200000&period2=1633478400&interval=1d&filter=history&frequency=1d&includeAdjustedClose=true&guccounter=1&guce_referrer=aHR0cHM6Ly9sb2dpbi55YWhvby5jb20v&guce_referrer_sig=AQAAAGCpe03QebHzUStS2mougl8dnCKJAI-ZyXcfxtvlxyfxGjS1lqE8u4TUsHkg3F3PI3zDSKJd4HZgW-8v7eGWYC2e3--U52QtxztdCs8137CThk1b94VTOHM6MkGVnUlCoBq0dyV_GoDX16AG87SZhF8yG1fBrCRv3sHdq3SYD9SB", "Cattle futures"), 
+                                   a(href="https://www.economist.com/big-mac-index", "The Big Mac Index")
+                                 ))
+                        )
+                        ),
+               
+               tabPanel("Model",
                         fluidRow(
                           #TabSet for displaying select files and pre-computed data tab
                           column(12,wellPanel(    
@@ -218,9 +239,21 @@ server <- function(input, output, session) {
       explanation <- paste0("The correlation between ", input$choose_currency, " and US cattle futures is ",round(test_results$cor_results$estimate,2),"\n
                           with a P-value of ", format(test_results$cor_results$p.value, nsmall = 4, digits = 2))
       
+      if(test_results$cor_results$estimate >= 0.5){
+        proof <- "proves"
+      }else if(test_results$cor_results$estimate >= 0.3 & test_results$cor_results$estimate < 0.5){
+        proof <- "moderately proves"
+      }else if(test_results$cor_results$estimate >= 0 & test_results$cor_results$estimate < 0.3){
+        proof <- "barely proves"
+      }else if(test_results$cor_results$estimate < 0){
+        proof <- "disproves"
+      }
+      
+      hypothesis <- paste0("A correlation of ",round(test_results$cor_results$estimate,2)," between cattle prices and the big mac index for ",input$choose_currency," ",proof," our hypothesis, that when cattle price move, big mac prices move, and exchange thus move")
+      
       div(h4(explanation), 
-          h4(paste0("No. of points in correlation = ", test_results$points))
-          #h4(paste("This text is ", tags$span(style="color:red", "red"), sep = ""))
+          h4(paste0("No. of points in correlation = ", test_results$points)),
+          h4(hypothesis)
       )
     }, 
     error = function(e){
