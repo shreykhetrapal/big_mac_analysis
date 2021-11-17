@@ -17,19 +17,18 @@ all input data are stored in `./data/data_raw`:
 * `big-mac-source-data.csv` contains raw values for 2000-2021 period.
 * `Live Cattle Futures Data - Sheet1.csv` contains raw values of cattle futures from 2000-2021 period.
 
-### Data preprocessing for big mac index
-run:
+### Data preprocessing
+To get the processed data for big mac index, go to terminal prompt and run:
 ```
 $ Rscript R/raw_preprocessing_big_mac.R
 ```
 
-### Data preprocessing for cattle data
-run:
+To get the processed data for cattle futures, go to terminal prompt and run:
 ```
 $ Rscript R/raw_preprocessing_cattle.R
 ```
 ### Generating final dataset
-run:
+To generate the final dataset (please ensure that you already run the previous two preprocessing commands above), go to terminal prompt and run:
 ```
 $ Rscript R/data_merge.R
 ```
