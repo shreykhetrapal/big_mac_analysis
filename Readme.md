@@ -27,7 +27,7 @@ To get the processed data for cattle futures, go to terminal prompt and run:
 ```
 $ Rscript R/raw_preprocessing_cattle.R
 ```
-### Generating final dataset
+
 To generate the final dataset (please ensure that you already run the previous two preprocessing commands above), go to terminal prompt and run:
 ```
 $ Rscript R/data_merge.R
